@@ -1,29 +1,3 @@
-[
-    {
-        "idx": 198736,
-        "project": "linux",
-        "commit_id": "d563131ef23cbc756026f839a82598c8445bc45f",
-        "project_url": "https://github.com/torvalds/linux",
-        "commit_url": "https://github.com/torvalds/linux/commit/d563131ef23cbc756026f839a82598c8445bc45f",
-        "commit_message": "rsi: release skb if rsi_prepare_beacon fails\n\nIn rsi_send_beacon, if rsi_prepare_beacon fails the allocated skb should\nbe released.\n\nSigned-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>\nSigned-off-by: Kalle Valo <kvalo@codeaurora.org>",
-        "target": 1,
-        "irrelevant": 0,
-        "func_before": "static int rsi_send_beacon(struct rsi_common *common)\n{\n\tstruct sk_buff *skb = NULL;\n\tu8 dword_align_bytes = 0;\n\n\tskb = dev_alloc_skb(MAX_MGMT_PKT_SIZE);\n\tif (!skb)\n\t\treturn -ENOMEM;\n\n\tmemset(skb->data, 0, MAX_MGMT_PKT_SIZE);\n\n\tdword_align_bytes = ((unsigned long)skb->data & 0x3f);\n\tif (dword_align_bytes)\n\t\tskb_pull(skb, (64 - dword_align_bytes));\n\tif (rsi_prepare_beacon(common, skb)) {\n\t\trsi_dbg(ERR_ZONE, \"Failed to prepare beacon\\n\");\n\t\treturn -EINVAL;\n\t}\n\tskb_queue_tail(&common->tx_queue[MGMT_BEACON_Q], skb);\n\trsi_set_event(&common->tx_thread.event);\n\trsi_dbg(DATA_TX_ZONE, \"%s: Added to beacon queue\\n\", __func__);\n\n\treturn 0;\n}",
-        "func_hash": 130931178778692254191224779038755080046,
-        "file_name": "rsi_91x_mgmt.c",
-        "file_hash": 125660046646447806158908760119804627111,
-        "cwe": [
-            "CWE-401"
-        ],
-        "cve": "CVE-2019-19071",
-        "cve_desc": "A memory leak in the rsi_send_beacon() function in drivers/net/wireless/rsi/rsi_91x_mgmt.c in the Linux kernel through 5.3.11 allows attackers to cause a denial of service (memory consumption) by triggering rsi_prepare_beacon() failures, aka CID-d563131ef23c.",
-        "nvd_url": "https://nvd.nist.gov/vuln/detail/CVE-2019-19071",
-        "func_name": "rsi_send_beacon",
-        "diff": [
-            "diff --git a/drivers/net/wireless/rsi/rsi_91x_mgmt.c b/drivers/net/wireless/rsi/rsi_91x_mgmt.c\nindex 6c7f26ef6476ae..9cc8a335d519da 100644\n--- a/drivers/net/wireless/rsi/rsi_91x_mgmt.c\n+++ b/drivers/net/wireless/rsi/rsi_91x_mgmt.c\n@@ -1756,6 +1756,7 @@ static int rsi_send_beacon(struct rsi_common *common)\n \t\tskb_pull(skb, (64 - dword_align_bytes));\n \tif (rsi_prepare_beacon(common, skb)) {\n \t\trsi_dbg(ERR_ZONE, \"Failed to prepare beacon\\n\");\n+\t\tdev_kfree_skb(skb);\n \t\treturn -EINVAL;\n \t}\n \tskb_queue_tail(&common->tx_queue[MGMT_BEACON_Q], skb);\n"
-        ],
-        "func_after": [
-            "static int rsi_send_beacon(struct rsi_common *common)\n{\n\tstruct sk_buff *skb = NULL;\n\tu8 dword_align_bytes = 0;\n\n\tskb = dev_alloc_skb(MAX_MGMT_PKT_SIZE);\n\tif (!skb)\n\t\treturn -ENOMEM;\n\n\tmemset(skb->data, 0, MAX_MGMT_PKT_SIZE);\n\n\tdword_align_bytes = ((unsigned long)skb->data & 0x3f);\n\tif (dword_align_bytes)\n\t\tskb_pull(skb, (64 - dword_align_bytes));\n\tif (rsi_prepare_beacon(common, skb)) {\n\t\trsi_dbg(ERR_ZONE, \"Failed to prepare beacon\\n\");\n\t\tdev_kfree_skb(skb);\n\t\treturn -EINVAL;\n\t}\n\tskb_queue_tail(&common->tx_queue[MGMT_BEACON_Q], skb);\n\trsi_set_event(&common->tx_thread.event);\n\trsi_dbg(DATA_TX_ZONE, \"%s: Added to beacon queue\\n\", __func__);\n\n\treturn 0;\n}"
-        ]
-    }
-]
+version https://git-lfs.github.com/spec/v1
+oid sha256:e0527e2dc5a5c6a65ecc3e5c523fa64da515437f8ea29d466db2d6706985acab
+size 3353

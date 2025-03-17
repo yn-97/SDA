@@ -1,23 +1,3 @@
-[
-  {
-        "idx": 198743,
-        "project": "LuaJIT",
-        "commit_id": "53f82e6e2e858a0a62fd1a2ff47e9866693382e6",
-        "project_url": "https://github.com/LuaJIT/LuaJIT",
-        "commit_url": "https://github.com/LuaJIT/LuaJIT/commit/53f82e6e2e858a0a62fd1a2ff47e9866693382e6",
-        "commit_message": "Fix frame traversal for __gc handler frames.\n\nReported by Changochen.",
-        "target": 1,
-        "irrelevant": 0,
-        "func": "static ptrdiff_t finderrfunc(lua_State *L)\n{\n  cTValue *frame = L->base-1, *bot = tvref(L->stack);\n  void *cf = L->cframe;\n  while (frame > bot && cf) {\n    while (cframe_nres(cframe_raw(cf)) < 0) {  /* cframe without frame? */\n      if (frame >= restorestack(L, -cframe_nres(cf)))\n\tbreak;\n      if (cframe_errfunc(cf) >= 0)  /* Error handler not inherited (-1)? */\n\treturn cframe_errfunc(cf);\n      cf = cframe_prev(cf);  /* Else unwind cframe and continue searching. */\n      if (cf == NULL)\n\treturn 0;\n    }\n    switch (frame_typep(frame)) {\n    case FRAME_LUA:\n    case FRAME_LUAP:\n      frame = frame_prevl(frame);\n      break;\n    case FRAME_C:\n      cf = cframe_prev(cf);\n      /* fallthrough */\n    case FRAME_VARG:\n      frame = frame_prevd(frame);\n      break;\n    case FRAME_CONT:\n#if LJ_HASFFI\n      if ((frame-1)->u32.lo == LJ_CONT_FFI_CALLBACK)\n\tcf = cframe_prev(cf);\n#endif\n      frame = frame_prevd(frame);\n      break;\n    case FRAME_CP:\n      if (cframe_canyield(cf)) return 0;\n      if (cframe_errfunc(cf) >= 0)\n\treturn cframe_errfunc(cf);\n      frame = frame_prevd(frame);\n      break;\n    case FRAME_PCALL:\n    case FRAME_PCALLH:\n      if (frame_ftsz(frame) >= (ptrdiff_t)(2*sizeof(TValue)))  /* xpcall? */\n\treturn savestack(L, frame-1);  /* Point to xpcall's errorfunc. */\n      return 0;\n    default:\n      lua_assert(0);\n      return 0;\n    }\n  }\n  return 0;\n}",
-        "func_hash": 309200300493568288549157158368440611870,
-        "file_name": "lj_err.c",
-        "file_hash": 339549767514658029818043680727253046808,
-        "cwe": [
-            "CWE-125"
-        ],
-        "cve": "CVE-2020-15890",
-        "cve_desc": "LuaJit through 2.1.0-beta3 has an out-of-bounds read because __gc handler frame traversal is mishandled.",
-        "nvd_url": "https://nvd.nist.gov/vuln/detail/CVE-2020-15890",
-        "func_name": "finderrfunc"
-    }
-]
+version https://git-lfs.github.com/spec/v1
+oid sha256:4e7ec2004b8fbc75d13e1b3b9d9c1af040d6eb228f9e1c7500d13bc12aa09997
+size 2374
