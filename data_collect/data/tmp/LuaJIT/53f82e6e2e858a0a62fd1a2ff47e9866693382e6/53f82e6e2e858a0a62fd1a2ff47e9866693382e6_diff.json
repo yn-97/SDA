@@ -1,0 +1,5 @@
+{
+    "diff_info": [
+        "commit 53f82e6e2e858a0a62fd1a2ff47e9866693382e6\nAuthor: Mike Pall <mike>\nDate:   Sun Jul 12 14:30:34 2020 +0200\n\n    Fix frame traversal for __gc handler frames.\n    \n    Reported by Changochen.\n\ndiff --git a/src/lj_err.c b/src/lj_err.c\nindex caa7487f..e3e0c2eb 100644\n--- a/src/lj_err.c\n+++ b/src/lj_err.c\n@@ -529,6 +529,7 @@ static ptrdiff_t finderrfunc(lua_State *L)\n       if (cframe_canyield(cf)) return 0;\n       if (cframe_errfunc(cf) >= 0)\n \treturn cframe_errfunc(cf);\n+      cf = cframe_prev(cf);\n       frame = frame_prevd(frame);\n       break;\n     case FRAME_PCALL:\n"
+    ]
+}
